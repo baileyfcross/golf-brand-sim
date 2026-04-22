@@ -1,0 +1,305 @@
+{
+  "format": 1,
+  "restore": {
+    "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\tests\\GolfBrandSim.Tests\\GolfBrandSim.Tests.csproj": {}
+  },
+  "projects": {
+    "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Core\\GolfBrandSim.Core.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Core\\GolfBrandSim.Core.csproj",
+        "projectName": "GolfBrandSim.Core",
+        "projectPath": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Core\\GolfBrandSim.Core.csproj",
+        "packagesPath": "C:\\Users\\baley\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Core\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\baley\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {}
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.312/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Game\\GolfBrandSim.Game.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Game\\GolfBrandSim.Game.csproj",
+        "projectName": "GolfBrandSim.Game",
+        "projectPath": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Game\\GolfBrandSim.Game.csproj",
+        "packagesPath": "C:\\Users\\baley\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Game\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\baley\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Core\\GolfBrandSim.Core.csproj": {
+                "projectPath": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Core\\GolfBrandSim.Core.csproj"
+              },
+              "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Infrastructure\\GolfBrandSim.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Infrastructure\\GolfBrandSim.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "MonoGame.Framework.DesktopGL": {
+              "target": "Package",
+              "version": "[3.8.1.303, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.312/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Infrastructure\\GolfBrandSim.Infrastructure.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Infrastructure\\GolfBrandSim.Infrastructure.csproj",
+        "projectName": "GolfBrandSim.Infrastructure",
+        "projectPath": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Infrastructure\\GolfBrandSim.Infrastructure.csproj",
+        "packagesPath": "C:\\Users\\baley\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Infrastructure\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\baley\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Core\\GolfBrandSim.Core.csproj": {
+                "projectPath": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Core\\GolfBrandSim.Core.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.312/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    },
+    "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\tests\\GolfBrandSim.Tests\\GolfBrandSim.Tests.csproj": {
+      "version": "1.0.0",
+      "restore": {
+        "projectUniqueName": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\tests\\GolfBrandSim.Tests\\GolfBrandSim.Tests.csproj",
+        "projectName": "GolfBrandSim.Tests",
+        "projectPath": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\tests\\GolfBrandSim.Tests\\GolfBrandSim.Tests.csproj",
+        "packagesPath": "C:\\Users\\baley\\.nuget\\packages\\",
+        "outputPath": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\tests\\GolfBrandSim.Tests\\obj\\",
+        "projectStyle": "PackageReference",
+        "fallbackFolders": [
+          "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+        ],
+        "configFilePaths": [
+          "C:\\Users\\baley\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config"
+        ],
+        "originalTargetFrameworks": [
+          "net9.0"
+        ],
+        "sources": {
+          "https://api.nuget.org/v3/index.json": {}
+        },
+        "frameworks": {
+          "net9.0": {
+            "targetAlias": "net9.0",
+            "projectReferences": {
+              "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Core\\GolfBrandSim.Core.csproj": {
+                "projectPath": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Core\\GolfBrandSim.Core.csproj"
+              },
+              "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Game\\GolfBrandSim.Game.csproj": {
+                "projectPath": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Game\\GolfBrandSim.Game.csproj"
+              },
+              "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Infrastructure\\GolfBrandSim.Infrastructure.csproj": {
+                "projectPath": "C:\\Users\\baley\\Documents\\Coding Projects\\golf-brand-sim\\src\\GolfBrandSim.Infrastructure\\GolfBrandSim.Infrastructure.csproj"
+              }
+            }
+          }
+        },
+        "warningProperties": {
+          "warnAsError": [
+            "NU1605"
+          ]
+        },
+        "restoreAuditProperties": {
+          "enableAudit": "true",
+          "auditLevel": "low",
+          "auditMode": "direct"
+        },
+        "SdkAnalysisLevel": "9.0.300"
+      },
+      "frameworks": {
+        "net9.0": {
+          "targetAlias": "net9.0",
+          "dependencies": {
+            "Microsoft.NET.Test.Sdk": {
+              "target": "Package",
+              "version": "[17.12.0, )"
+            },
+            "coverlet.collector": {
+              "target": "Package",
+              "version": "[6.0.2, )"
+            },
+            "xunit": {
+              "target": "Package",
+              "version": "[2.9.2, )"
+            },
+            "xunit.runner.visualstudio": {
+              "target": "Package",
+              "version": "[2.8.2, )"
+            }
+          },
+          "imports": [
+            "net461",
+            "net462",
+            "net47",
+            "net471",
+            "net472",
+            "net48",
+            "net481"
+          ],
+          "assetTargetFallback": true,
+          "warn": true,
+          "frameworkReferences": {
+            "Microsoft.NETCore.App": {
+              "privateAssets": "all"
+            }
+          },
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.312/PortableRuntimeIdentifierGraph.json"
+        }
+      }
+    }
+  }
+}

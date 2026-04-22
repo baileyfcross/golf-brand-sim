@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v9.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v9.0": {
+      "GolfBrandSim.Infrastructure/1.0.0": {
+        "dependencies": {
+          "GolfBrandSim.Core": "1.0.0"
+        },
+        "runtime": {
+          "GolfBrandSim.Infrastructure.dll": {}
+        }
+      },
+      "GolfBrandSim.Core/1.0.0": {
+        "runtime": {
+          "GolfBrandSim.Core.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "GolfBrandSim.Infrastructure/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "GolfBrandSim.Core/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
