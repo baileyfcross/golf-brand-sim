@@ -36,7 +36,7 @@ public sealed class DashboardScreen : IScreen
         UiToolkit.DrawTable(
             ui,
             new Rectangle(contractsBounds.X + 16, contractsBounds.Y + 52, contractsBounds.Width - 32, contractsBounds.Height - 68),
-            ["NAME", "RATING", "SHARE", "RETAINER", "LAST FINISH"],
+            ["NAME", "OVR", "SHARE", "RETAINER", "LAST FINISH"],
             [240, 90, 110, 130, 140],
             contractRows);
 
@@ -85,7 +85,7 @@ public sealed class DashboardScreen : IScreen
         return
         [
             golfer.FullName.ToUpperInvariant(),
-            golfer.SkillRating.ToString(),
+            golfer.Overall.ToString(),
             Formatters.Percent(contract.WinningsShareRate),
             Formatters.Money(contract.WeeklyRetainer),
             standing is null ? "PENDING" : $"P{standing.Place}"

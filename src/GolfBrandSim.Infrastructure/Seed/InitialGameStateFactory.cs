@@ -7,11 +7,10 @@ namespace GolfBrandSim.Infrastructure.Seed;
 
 public static class InitialGameStateFactory
 {
-    public static GameSession Create(int seed)
+    public static GameSession Create(string brandName, ProductCategory specialization, int seed)
     {
         var golfers = FictionalGolferSeedData.CreateGolfers();
-        var specialization = ProductCategory.Equipment;
-        var brand = CreateBrand(golfers, specialization);
+        var brand = CreateBrand(brandName, specialization);
         var financeLedger = new FinanceLedger();
         financeLedger.Add(new FinanceEntry(0, FinanceEntryType.Capital, "FOUNDER CAPITAL", brand.CashBalance));
 
@@ -21,19 +20,18 @@ public static class InitialGameStateFactory
         return new GameSession(state, new WeeklyGameLoop(tournamentSimulator));
     }
 
-    private static Brand CreateBrand(IReadOnlyList<Golfer> golfers, ProductCategory specialization)
+    private static Brand CreateBrand(string brandName, ProductCategory specialization)
     {
-        var contracts = new[]
+        var startingCash = specialization switch
         {
-            new SponsorshipContract(golfers[0].Id, "LIAM HART SIGNATURE", 0.20m, 210_000m, 1, 36),
-            new SponsorshipContract(golfers[6].Id, "RIKU SATO TOUR", 0.18m, 165_000m, 1, 36),
-            new SponsorshipContract(golfers[11].Id, "GABRIEL STONE DEVELOPMENT", 0.15m, 92_000m, 1, 36),
-            new SponsorshipContract(golfers[18].Id, "BENJI FORD REGIONAL", 0.12m, 68_000m, 1, 36)
+            ProductCategory.Apparel => 1_100_000m,
+            ProductCategory.Accessories => 1_150_000m,
+            _ => 1_250_000m
         };
 
         var products = new[]
         {
-            BrandProduct.CreateStarterLine("SUMMIT", specialization)
+            BrandProduct.CreateStarterLine(brandName, specialization)
         };
 
         var researchTracks = Enum.GetValues<ProductCategory>()
@@ -42,11 +40,11 @@ public static class InitialGameStateFactory
 
         return new Brand(
             Guid.NewGuid(),
-            "SUMMIT",
+            brandName,
             specialization,
-            1_250_000m,
+            startingCash,
             products,
             researchTracks,
-            contracts);
+            []);
     }
 }

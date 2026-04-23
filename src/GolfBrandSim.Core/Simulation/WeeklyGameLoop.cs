@@ -25,10 +25,12 @@ public sealed class WeeklyGameLoop
         var tournamentResult = _tournamentSimulator.Simulate(tournament, state.Golfers);
         var financeEntries = new List<FinanceEntry>();
 
+        // Record standings before applying financials
+        state.SeasonStandings.RecordResult(tournamentResult);
+
         var sponsorshipIncome = ApplySponsorshipIncome(state.PlayerBrand, tournamentResult, weekNumber, financeEntries);
-        var productProfit = ApplyProductRevenue(state.PlayerBrand, tournamentResult, weekNumber, financeEntries);
+        var productProfit = ApplyProductRevenue(state.PlayerBrand, tournamentResult, state, weekNumber, financeEntries);
         var operatingExpense = ApplyOperatingExpense(state.PlayerBrand, weekNumber, financeEntries);
-        ApplyResearchProgress(state.PlayerBrand, weekNumber, financeEntries);
 
         state.FinanceLedger.AddRange(financeEntries);
 
@@ -81,22 +83,42 @@ public sealed class WeeklyGameLoop
     private static decimal ApplyProductRevenue(
         Brand brand,
         TournamentResult tournamentResult,
+        GameState state,
         int weekNumber,
         ICollection<FinanceEntry> financeEntries)
     {
-        var sponsoredGolfers = tournamentResult.Standings
-            .Where(standing => brand.Contracts.Any(contract => contract.GolferId == standing.Golfer.Id))
+        // Base demand multiplier from best sponsored finish
+        var sponsoredStandings = tournamentResult.Standings
+            .Where(s => brand.Contracts.Any(c => c.GolferId == s.Golfer.Id && c.IsActiveForWeek(weekNumber)))
             .ToList();
 
         var brandHeat = 1.0m;
-        if (sponsoredGolfers.Count > 0)
+        if (sponsoredStandings.Count > 0)
         {
-            var bestFinish = sponsoredGolfers.Min(standing => standing.Place);
-            brandHeat += Math.Max(0m, 0.18m - (bestFinish - 1) * 0.01m);
+            var bestFinish = sponsoredStandings.Min(s => s.Place);
+            // Win is a big boost, top-5 meaningful, top-10 minor
+            brandHeat += Math.Max(0m, 0.20m - (bestFinish - 1) * 0.012m);
+
+            // Additional boost from golfer marketability (popularity × marketability effect)
+            var bestGolfer = sponsoredStandings.First(s => s.Place == bestFinish).Golfer;
+            var mktBoost = bestGolfer.Marketability * 0.0008m;
+            brandHeat += mktBoost;
+
+            // Seasonal wins bonus: each win this season by a contracted golfer adds a small permanent lift
+            var contractedIds = brand.Contracts
+                .Where(c => c.IsActiveForWeek(weekNumber))
+                .Select(c => c.GolferId)
+                .ToHashSet();
+
+            var seasonWins = contractedIds
+                .Where(id => state.SeasonStandings.Stats.TryGetValue(id, out var s) && s.Wins > 0)
+                .Sum(id => state.SeasonStandings.Stats[id].Wins);
+
+            brandHeat += seasonWins * 0.015m;
         }
 
         decimal total = 0m;
-        foreach (var product in brand.Products.Where(product => product.IsActive))
+        foreach (var product in brand.Products.Where(p => p.IsActive))
         {
             var profit = product.CalculateWeeklyProfit(brandHeat);
             financeEntries.Add(new FinanceEntry(
@@ -128,27 +150,5 @@ public sealed class WeeklyGameLoop
         }
 
         return total;
-    }
-
-    private static void ApplyResearchProgress(Brand brand, int weekNumber, ICollection<FinanceEntry> financeEntries)
-    {
-        foreach (var track in brand.ResearchTracks.Where(track => !track.IsUnlocked))
-        {
-            if (!track.Advance(6))
-            {
-                continue;
-            }
-
-            if (!brand.HasProductInCategory(track.Category))
-            {
-                brand.Products.Add(BrandProduct.CreateExpansionLine(brand.Name, track.Category));
-            }
-
-            financeEntries.Add(new FinanceEntry(
-                weekNumber,
-                FinanceEntryType.ResearchUnlock,
-                $"{track.Category} RESEARCH COMPLETE",
-                0m));
-        }
     }
 }

@@ -30,7 +30,7 @@ public sealed class TournamentSimulator : ITournamentSimulator
     public TournamentResult Simulate(Tournament tournament, IReadOnlyList<Golfer> golfers)
     {
         var field = golfers
-            .OrderByDescending(golfer => golfer.SkillRating + golfer.Consistency * 0.15 + NextDouble(0, 5))
+            .OrderByDescending(golfer => golfer.Overall + golfer.Consistency * 0.15 + NextDouble(0, 5))
             .Take(Math.Min(tournament.FieldSize, golfers.Count))
             .ToList();
 
@@ -39,8 +39,8 @@ public sealed class TournamentSimulator : ITournamentSimulator
         {
             roundsByGolfer[golfer.Id] =
             [
-                SimulateRound(golfer, tournament.IsMajor),
-                SimulateRound(golfer, tournament.IsMajor)
+                SimulateRound(golfer, tournament),
+                SimulateRound(golfer, tournament)
             ];
         }
 
@@ -48,7 +48,7 @@ public sealed class TournamentSimulator : ITournamentSimulator
         var cutOrdered = field
             .Select(golfer => new { Golfer = golfer, Total = roundsByGolfer[golfer.Id].Sum() })
             .OrderBy(entry => entry.Total)
-            .ThenByDescending(entry => entry.Golfer.SkillRating)
+            .ThenByDescending(entry => entry.Golfer.Overall)
             .ToList();
 
         var cutScore = cutOrdered[cutIndex].Total;
@@ -59,14 +59,14 @@ public sealed class TournamentSimulator : ITournamentSimulator
 
         foreach (var golfer in field.Where(golfer => golfersMakingCut.Contains(golfer)))
         {
-            roundsByGolfer[golfer.Id].Add(SimulateRound(golfer, tournament.IsMajor));
-            roundsByGolfer[golfer.Id].Add(SimulateRound(golfer, tournament.IsMajor));
+            roundsByGolfer[golfer.Id].Add(SimulateRound(golfer, tournament));
+            roundsByGolfer[golfer.Id].Add(SimulateRound(golfer, tournament));
         }
 
         var orderedStandings = field
             .Select(golfer => BuildStanding(golfer, roundsByGolfer[golfer.Id], golfersMakingCut.Contains(golfer)))
             .OrderBy(standing => standing.TotalScore)
-            .ThenByDescending(standing => standing.Golfer.SkillRating)
+            .ThenByDescending(standing => standing.Golfer.Overall)
             .ToList();
 
         var standings = AssignPlacesAndPayouts(orderedStandings, tournament.Purse);
@@ -109,13 +109,36 @@ public sealed class TournamentSimulator : ITournamentSimulator
         return standings;
     }
 
-    private int SimulateRound(Golfer golfer, bool majorSetup)
+    private int SimulateRound(Golfer golfer, Tournament tournament)
     {
-        var baseline = 76.2 - golfer.SkillRating * 0.095;
-        var variance = 1.4 + (100 - golfer.Consistency) * 0.02;
-        var courseTax = majorSetup ? 1.2 : 0.0;
-        var score = baseline + courseTax + NextGaussian() * variance;
-        return (int)Math.Clamp(Math.Round(score), 65, 81);
+        var profile = tournament.CourseProfile;
+
+        var totalDemand = profile.DistanceDemand + profile.AccuracyDemand +
+                          profile.ApproachDemand + profile.ShortGameDemand + profile.PuttingDemand;
+
+        var weightedSkill = totalDemand > 0
+            ? (golfer.DrivingDistance * profile.DistanceDemand +
+               golfer.DrivingAccuracy * profile.AccuracyDemand +
+               golfer.Approach * profile.ApproachDemand +
+               golfer.ShortGame * profile.ShortGameDemand +
+               golfer.Putting * profile.PuttingDemand) / (double)totalDemand
+            : golfer.Overall;
+
+        var difficultyMod = profile.Difficulty * 0.15;
+        var baseline = 76.2 - weightedSkill * 0.095 + difficultyMod;
+
+        var volatilityMod = profile.Volatility * 0.07;
+        var variance = 1.4 + (100 - golfer.Consistency) * 0.02 + volatilityMod;
+
+        // Majors: low mentality golfers struggle under pressure
+        if (tournament.IsMajor)
+        {
+            var mentalityPenalty = Math.Max(0, 85 - golfer.Mentality) * 0.010;
+            baseline += mentalityPenalty;
+        }
+
+        var score = baseline + NextGaussian() * variance;
+        return (int)Math.Clamp(Math.Round(score), 63, 82);
     }
 
     private double NextDouble(double min, double max)

@@ -4,7 +4,7 @@ namespace GolfBrandSim.Core.Domain;
 
 public sealed class Tournament
 {
-    public Tournament(int weekNumber, string name, string venueName, TournamentType type, decimal purse, int fieldSize)
+    public Tournament(int weekNumber, string name, string venueName, TournamentType type, decimal purse, int fieldSize, CourseProfile courseProfile)
     {
         WeekNumber = weekNumber;
         Name = name;
@@ -12,6 +12,7 @@ public sealed class Tournament
         Type = type;
         Purse = purse;
         FieldSize = fieldSize;
+        CourseProfile = courseProfile;
     }
 
     public int WeekNumber { get; }
@@ -25,6 +26,8 @@ public sealed class Tournament
     public decimal Purse { get; }
 
     public int FieldSize { get; }
+
+    public CourseProfile CourseProfile { get; }
 
     public bool IsMajor => Type == TournamentType.Major;
 }

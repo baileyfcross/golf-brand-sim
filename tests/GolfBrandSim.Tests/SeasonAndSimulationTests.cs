@@ -22,7 +22,7 @@ public sealed class SeasonAndSimulationTests
     public void TournamentSimulator_IsDeterministicForSeed_AndAppliesCutAfterRoundTwo()
     {
         var golfers = FictionalGolferSeedData.CreateGolfers();
-        var tournament = new Tournament(1, "TEST EVENT", "TEST CLUB", TournamentType.Standard, 8_200_000m, golfers.Count);
+        var tournament = new Tournament(1, "TEST EVENT", "TEST CLUB", TournamentType.Standard, 8_200_000m, golfers.Count, CourseProfile.Balanced);
 
         var firstResult = new TournamentSimulator(77).Simulate(tournament, golfers);
         var secondResult = new TournamentSimulator(77).Simulate(tournament, golfers);
@@ -37,7 +37,7 @@ public sealed class SeasonAndSimulationTests
     [Fact]
     public void GameSession_AdvanceWeek_UpdatesStateAndLedger()
     {
-        var session = InitialGameStateFactory.Create(20260422);
+        var session = InitialGameStateFactory.Create("TEST BRAND", ProductCategory.Equipment, 20260422);
 
         var result = session.AdvanceWeek();
 

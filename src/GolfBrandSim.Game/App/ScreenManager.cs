@@ -25,9 +25,13 @@ public sealed class ScreenManager
         [
             new DashboardScreen(),
             new GolfersScreen(),
+            new ContractsScreen(),
+            new StandingsScreen(),
             new CalendarScreen(),
             new TournamentResultsScreen(),
-            new FinanceScreen()
+            new FinanceScreen(),
+            new ProductManagementScreen(),
+            new ResearchScreen()
         ];
     }
 
@@ -65,6 +69,22 @@ public sealed class ScreenManager
         else if (input.IsNewKeyPress(Keys.F5))
         {
             _selectedIndex = 4;
+        }
+        else if (input.IsNewKeyPress(Keys.F6))
+        {
+            _selectedIndex = 5;
+        }
+        else if (input.IsNewKeyPress(Keys.F7))
+        {
+            _selectedIndex = 6;
+        }
+        else if (input.IsNewKeyPress(Keys.F8))
+        {
+            _selectedIndex = 7;
+        }
+        else if (input.IsNewKeyPress(Keys.F9))
+        {
+            _selectedIndex = 8;
         }
         else if (input.IsNewKeyPress(Keys.Right))
         {

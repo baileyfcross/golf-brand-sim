@@ -1,3 +1,5 @@
+using System.Text;
+using GolfBrandSim.Core.Enums;
 using GolfBrandSim.Game.App;
 using GolfBrandSim.Game.UI;
 using GolfBrandSim.Core.Simulation;
@@ -32,6 +34,9 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
     private int _menuHoverIndex = -1;
     private int _optionsHoverIndex = -1;
 
+    private BrandCreationState _brandCreationState = new();
+    private readonly StringBuilder _brandNameBuffer = new("MY BRAND");
+
     public GolfBrandSimGame(int simulationSeed)
     {
         _bootstrapSeed = simulationSeed;
@@ -53,10 +58,23 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
         _primitiveBatch = new PrimitiveBatch(GraphicsDevice);
         _pixelFont = new PixelFont();
 
-        StartNewGame(_bootstrapSeed);
         _mode = AppMode.MainMenu;
         _menuMessage = _saveGameStore.HasSaveFile() ? "SAVE SLOT READY" : "NO SAVED GAME FOUND";
         ApplySoundOptions();
+
+        Window.TextInput += (_, e) =>
+        {
+            if (_mode != AppMode.BrandCreation) return;
+            if (e.Character == '\b')
+            {
+                if (_brandNameBuffer.Length > 0)
+                    _brandNameBuffer.Remove(_brandNameBuffer.Length - 1, 1);
+            }
+            else if (!char.IsControl(e.Character) && _brandNameBuffer.Length < 20)
+            {
+                _brandNameBuffer.Append(char.ToUpper(e.Character));
+            }
+        };
     }
 
     protected override void Update(GameTime gameTime)
@@ -69,6 +87,11 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
         {
             _mode = AppMode.MainMenu;
             _menuMessage = "PAUSED";
+        }
+        else if (_mode == AppMode.BrandCreation && input.IsNewKeyPress(Keys.Escape))
+        {
+            _mode = AppMode.MainMenu;
+            _menuMessage = "";
         }
         else if ((_mode == AppMode.MainMenu || _mode == AppMode.Options) && input.IsNewKeyPress(Keys.Escape))
         {
@@ -90,6 +113,9 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
                 break;
             case AppMode.Options:
                 UpdateOptionsMenu(input);
+                break;
+            case AppMode.BrandCreation:
+                UpdateBrandCreation(input);
                 break;
             case AppMode.InGame:
                 if (_screenManager is not null)
@@ -124,6 +150,9 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
                 break;
             case AppMode.Options:
                 DrawOptionsMenu(ui);
+                break;
+            case AppMode.BrandCreation:
+                DrawBrandCreation(ui);
                 break;
             case AppMode.InGame:
                 _screenManager?.Draw(ui);
@@ -166,25 +195,27 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
             case "CONTINUE GAME":
                 if (_session is null)
                 {
-                    _menuMessage = "NO ACTIVE GAME";
+                    _menuMessage = "START OR LOAD A GAME FIRST";
                     return;
                 }
 
                 _mode = AppMode.InGame;
                 break;
             case "LOAD GAME":
-                if (!_saveGameStore.TryLoad(out var loadedSession, out var loadedSeed))
+                if (!_saveGameStore.TryLoad(out var loadedSession))
                 {
                     _menuMessage = "NO SAVE FILE TO LOAD";
                     return;
                 }
 
-                AttachSession(loadedSession, loadedSeed);
+                AttachSession(loadedSession);
                 _mode = AppMode.InGame;
                 break;
             case "NEW GAME":
-                StartNewGame(Environment.TickCount);
-                _mode = AppMode.InGame;
+                _brandCreationState = new BrandCreationState();
+                _brandNameBuffer.Clear();
+                _brandNameBuffer.Append("MY BRAND");
+                _mode = AppMode.BrandCreation;
                 break;
             case "OPTIONS":
                 _mode = AppMode.Options;
@@ -439,23 +470,121 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
         return $"{Math.Round(value * 100f):0}%";
     }
 
-    private void StartNewGame(int seed)
+    private void StartNewGame(string brandName, ProductCategory specialization)
     {
-        AttachSession(InitialGameStateFactory.Create(seed), seed);
+        var seed = Environment.TickCount;
+        var session = InitialGameStateFactory.Create(brandName, specialization, seed);
+        AttachSession(session);
     }
 
-    private void AttachSession(GameSession session, int seed)
+    private void AttachSession(GameSession session)
     {
         _session = session;
         _screenManager = new ScreenManager(
             session,
-            () => _saveGameStore.Save(session, seed),
+            () => _saveGameStore.Save(session),
             () =>
             {
                 _mode = AppMode.MainMenu;
                 _menuMessage = "PAUSED";
-                _saveGameStore.Save(session, seed);
+                _saveGameStore.Save(session);
             });
-        _saveGameStore.Save(session, seed);
+        _saveGameStore.Save(session);
+    }
+
+    private void UpdateBrandCreation(InputState input)
+    {
+        var frame = GraphicsDevice.Viewport.Bounds;
+        _brandCreationState.SpecializationHoverIndex = -1;
+
+        var categories = Enum.GetValues<ProductCategory>();
+        for (var i = 0; i < categories.Length; i++)
+        {
+            if (GetSpecializationCardBounds(frame, i).Contains(input.MousePosition))
+                _brandCreationState.SpecializationHoverIndex = i;
+        }
+
+        _brandCreationState.ConfirmHovered = GetBrandConfirmBounds(frame).Contains(input.MousePosition);
+
+        if (input.IsNewLeftClick())
+        {
+            for (var i = 0; i < categories.Length; i++)
+            {
+                if (GetSpecializationCardBounds(frame, i).Contains(input.MousePosition))
+                    _brandCreationState.SelectedSpecialization = categories[i];
+            }
+
+            if (_brandCreationState.ConfirmHovered && _brandNameBuffer.Length > 0)
+            {
+                StartNewGame(_brandNameBuffer.ToString(), _brandCreationState.SelectedSpecialization);
+                _mode = AppMode.InGame;
+            }
+        }
+
+        if (input.IsNewKeyPress(Keys.Enter) && _brandNameBuffer.Length > 0)
+        {
+            StartNewGame(_brandNameBuffer.ToString(), _brandCreationState.SelectedSpecialization);
+            _mode = AppMode.InGame;
+        }
+    }
+
+    private void DrawBrandCreation(UiContext ui)
+    {
+        var frame = ui.ViewportBounds;
+        UiToolkit.DrawPanel(ui, new Rectangle(frame.Width / 2 - 400, 80, 800, frame.Height - 160), "NEW BRAND SETUP");
+
+        ui.DrawText("BRAND NAME", new Vector2(frame.Width / 2 - 370, 130), Theme.TextMuted, 2);
+        var nameFieldBounds = new Rectangle(frame.Width / 2 - 370, 156, 740, 44);
+        ui.FillRectangle(nameFieldBounds, Theme.Panel);
+        ui.DrawBorder(nameFieldBounds, Theme.Accent, 2);
+        var displayName = _brandNameBuffer.Length > 0 ? _brandNameBuffer.ToString() + "_" : "_";
+        ui.DrawText(displayName, new Vector2(nameFieldBounds.X + 14, nameFieldBounds.Y + 12), Theme.TextPrimary, 3);
+
+        ui.DrawText("SPECIALIZATION", new Vector2(frame.Width / 2 - 370, 224), Theme.TextMuted, 2);
+
+        var categories = Enum.GetValues<ProductCategory>();
+        for (var i = 0; i < categories.Length; i++)
+        {
+            var cat = categories[i];
+            var cardBounds = GetSpecializationCardBounds(frame, i);
+            var selected = _brandCreationState.SelectedSpecialization == cat;
+            var hovered = _brandCreationState.SpecializationHoverIndex == i;
+            ui.FillRectangle(cardBounds, selected ? Theme.Accent : hovered ? Theme.HighlightRow : Theme.PanelRaised);
+            ui.DrawBorder(cardBounds, selected ? Theme.AccentHighlight : Theme.PanelBorder, 2);
+            ui.DrawCenteredText(cat.ToString().ToUpperInvariant(), new Rectangle(cardBounds.X, cardBounds.Y + 12, cardBounds.Width, 24), selected ? Theme.Header : Theme.TextPrimary, 3);
+            var desc = cat switch
+            {
+                ProductCategory.Apparel => "FASHION FORWARD\nHIGH ENGAGEMENT",
+                ProductCategory.Accessories => "STRONG MARGINS\nBALANCED REVENUE",
+                _ => "PERFORMANCE GEAR\nHIGH REVENUE BASE"
+            };
+            ui.DrawCenteredText(desc.Split('\n')[0], new Rectangle(cardBounds.X, cardBounds.Y + 52, cardBounds.Width, 20), selected ? Theme.Header : Theme.TextMuted, 2);
+            ui.DrawCenteredText(desc.Split('\n')[1], new Rectangle(cardBounds.X, cardBounds.Y + 72, cardBounds.Width, 20), selected ? Theme.Header : Theme.TextMuted, 2);
+        }
+
+        ui.DrawText("CLICK A SPECIALIZATION, ENTER YOUR BRAND NAME, THEN PRESS ENTER OR CONFIRM.", new Vector2(frame.Width / 2 - 370, 374), Theme.TextMuted, 2);
+
+        var confirmBounds = GetBrandConfirmBounds(frame);
+        var ready = _brandNameBuffer.Length > 0;
+        ui.FillRectangle(confirmBounds, ready && _brandCreationState.ConfirmHovered ? Theme.AccentHighlight : ready ? Theme.Accent : Theme.PanelRaised);
+        ui.DrawBorder(confirmBounds, Theme.PanelBorder, 2);
+        ui.DrawCenteredText("START GAME", confirmBounds, ready ? Theme.Header : Theme.TextMuted, 2);
+
+        ui.DrawCenteredText("ESC TO RETURN TO MAIN MENU", new Rectangle(frame.Width / 2 - 300, frame.Height - 80, 600, 36), Theme.TextMuted, 2);
+    }
+
+    private static Rectangle GetSpecializationCardBounds(Rectangle frame, int index)
+    {
+        const int cardWidth = 226;
+        const int cardHeight = 100;
+        const int startY = 248;
+        var totalWidth = cardWidth * 3 + 16 * 2;
+        var startX = frame.Width / 2 - totalWidth / 2;
+        return new Rectangle(startX + index * (cardWidth + 16), startY, cardWidth, cardHeight);
+    }
+
+    private static Rectangle GetBrandConfirmBounds(Rectangle frame)
+    {
+        return new Rectangle(frame.Width / 2 - 140, 398, 280, 46);
     }
 }

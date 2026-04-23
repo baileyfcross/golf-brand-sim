@@ -20,6 +20,8 @@ public sealed class GameState
 
     public FinanceLedger FinanceLedger { get; }
 
+    public SeasonStandings SeasonStandings { get; } = new();
+
     public IList<WeekSimulationResult> CompletedWeeks { get; } = new List<WeekSimulationResult>();
 
     public int CurrentWeekNumber { get; private set; } = 1;

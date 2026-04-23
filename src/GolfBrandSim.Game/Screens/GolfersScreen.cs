@@ -9,7 +9,7 @@ namespace GolfBrandSim.Game.Screens;
 
 public sealed class GolfersScreen : IScreen
 {
-    private static readonly int[] ColumnWidths = [290, 80, 90, 90, 90, 120, 120];
+    private static readonly int[] ColumnWidths = [230, 55, 50, 60, 65, 65, 60, 65, 110];
     private const int SortButtonWidth = 170;
     private const int SortButtonHeight = 30;
 
@@ -55,7 +55,7 @@ public sealed class GolfersScreen : IScreen
         UiToolkit.DrawTable(
             ui,
             GetTableBounds(bounds),
-            ["NAME", "CTR", "RATING", "CONS", "POP", "SPONSORED", "SHARE"],
+            ["NAME", "CTR", "AGE", "OVR", "DRIVE", "APP", "PUT", "MKT", "STATUS"],
             ColumnWidths,
             rows);
     }
@@ -117,9 +117,8 @@ public sealed class GolfersScreen : IScreen
 
             _sortField = index switch
             {
-                2 => GolferSortField.Skill,
-                4 => GolferSortField.Popularity,
-                6 => GolferSortField.ContractShare,
+                3 => GolferSortField.Skill,
+                7 => GolferSortField.Popularity,
                 _ => _sortField
             };
 
@@ -141,10 +140,10 @@ public sealed class GolfersScreen : IScreen
     {
         return _sortField switch
         {
-            GolferSortField.Popularity => golfers.OrderByDescending(golfer => golfer.Popularity).ThenByDescending(golfer => golfer.SkillRating),
+            GolferSortField.Popularity => golfers.OrderByDescending(golfer => golfer.Popularity).ThenByDescending(golfer => golfer.Overall),
             GolferSortField.ContractShare => golfers.OrderByDescending(golfer => contracts.TryGetValue(golfer.Id, out var contract) ? contract.WinningsShareRate : -1m)
-                .ThenByDescending(golfer => golfer.SkillRating),
-            _ => golfers.OrderByDescending(golfer => golfer.SkillRating).ThenByDescending(golfer => golfer.Consistency)
+                .ThenByDescending(golfer => golfer.Overall),
+            _ => golfers.OrderByDescending(golfer => golfer.Overall).ThenByDescending(golfer => golfer.Consistency)
         };
     }
 
@@ -156,11 +155,13 @@ public sealed class GolfersScreen : IScreen
         [
             golfer.FullName.ToUpperInvariant(),
             golfer.CountryCode,
-            golfer.SkillRating.ToString(),
-            golfer.Consistency.ToString(),
-            golfer.Popularity.ToString(),
-            sponsored ? "YES" : "NO",
-            sponsored ? Formatters.Percent(contract!.WinningsShareRate) : "OPEN"
+            golfer.Age.ToString(),
+            golfer.Overall.ToString(),
+            golfer.DrivingDistance.ToString(),
+            golfer.Approach.ToString(),
+            golfer.Putting.ToString(),
+            golfer.Marketability.ToString(),
+            sponsored ? "CONTRACTED" : "SIGN"
         ];
     }
 

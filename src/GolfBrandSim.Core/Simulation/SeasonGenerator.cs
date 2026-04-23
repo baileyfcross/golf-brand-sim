@@ -46,15 +46,48 @@ public sealed class SeasonGenerator : ISeasonGenerator
         {
             if (MajorWeeks.TryGetValue(week, out var major))
             {
-                tournaments.Add(new Tournament(week, major.Name, major.Venue, TournamentType.Major, 14_000_000m, fieldSize));
+                var profile = BuildMajorProfile(major.Name);
+                tournaments.Add(new Tournament(week, major.Name, major.Venue, TournamentType.Major, 14_000_000m, fieldSize, profile));
                 continue;
             }
 
             var standardEvent = StandardEvents[standardEventIndex % StandardEvents.Length];
-            tournaments.Add(new Tournament(week, standardEvent.Name, standardEvent.Venue, TournamentType.Standard, 8_200_000m, fieldSize));
+            var standardProfile = BuildStandardProfile(standardEvent.Name);
+            tournaments.Add(new Tournament(week, standardEvent.Name, standardEvent.Venue, TournamentType.Standard, 8_200_000m, fieldSize, standardProfile));
             standardEventIndex++;
         }
 
         return new SeasonSchedule(year, tournaments);
+    }
+
+    private static CourseProfile BuildMajorProfile(string name) => name switch
+    {
+        // Augusta-style: approach and short game premium, high difficulty, low volatility
+        "MAGNOLIA MASTERS" => new CourseProfile(5, 7, 9, 9, 8, 9, 4),
+        // Links-style seaside: accuracy and distance, very high volatility
+        "COASTAL PGA" => new CourseProfile(6, 8, 8, 6, 7, 8, 5),
+        // Links open: distance and accuracy, high volatility
+        "ROYAL OPEN" => new CourseProfile(7, 9, 6, 7, 6, 8, 9),
+        // Championship finale: balanced but tough
+        "SUMMIT CHAMPIONSHIP" => new CourseProfile(7, 7, 8, 7, 7, 9, 6),
+        _ => new CourseProfile(6, 6, 7, 7, 7, 8, 5)
+    };
+
+    private static CourseProfile BuildStandardProfile(string name)
+    {
+        if (name.Contains("DESERT") || name.Contains("VALLEY"))
+            return new CourseProfile(8, 6, 7, 5, 6, 5, 6);
+        if (name.Contains("COASTAL") || name.Contains("HARBOR") || name.Contains("PACIFIC") || name.Contains("OCEAN"))
+            return new CourseProfile(6, 8, 7, 6, 7, 6, 7);
+        if (name.Contains("MOUNTAIN") || name.Contains("RIDGE") || name.Contains("SUMMIT"))
+            return new CourseProfile(7, 6, 8, 7, 6, 7, 5);
+        if (name.Contains("LINKS") || name.Contains("WIND") || name.Contains("CROSS"))
+            return new CourseProfile(7, 8, 6, 6, 6, 6, 8);
+        if (name.Contains("PINE") || name.Contains("WOOD") || name.Contains("FOREST"))
+            return new CourseProfile(6, 7, 7, 7, 6, 6, 5);
+        if (name.Contains("LAKE") || name.Contains("WATER") || name.Contains("RIVER"))
+            return new CourseProfile(6, 7, 7, 6, 8, 6, 6);
+        // Default balanced
+        return new CourseProfile(6, 6, 7, 6, 7, 6, 5);
     }
 }
