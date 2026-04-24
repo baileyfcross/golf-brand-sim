@@ -24,6 +24,10 @@ public sealed class GameState
 
     public IList<WeekSimulationResult> CompletedWeeks { get; } = new List<WeekSimulationResult>();
 
+    public IList<CompetitorBrand> CompetitorBrands { get; } = new List<CompetitorBrand>();
+
+    public IList<ContractOffer> RecentOffers { get; } = new List<ContractOffer>();
+
     public int CurrentWeekNumber { get; private set; } = 1;
 
     public WeekSimulationResult? LastWeekResult { get; private set; }

@@ -44,7 +44,7 @@ public sealed class TournamentSimulator : ITournamentSimulator
             ];
         }
 
-        var cutIndex = Math.Max(8, field.Count / 2) - 1;
+        var cutIndex = Math.Min(Math.Max(8, Math.Min(65, field.Count)) - 1, field.Count - 1);
         var cutOrdered = field
             .Select(golfer => new { Golfer = golfer, Total = roundsByGolfer[golfer.Id].Sum() })
             .OrderBy(entry => entry.Total)
@@ -81,6 +81,8 @@ public sealed class TournamentSimulator : ITournamentSimulator
     private IReadOnlyList<TournamentStanding> AssignPlacesAndPayouts(IReadOnlyList<TournamentStanding> rawStandings, decimal purse)
     {
         var standings = new List<TournamentStanding>(rawStandings.Count);
+        var paidSpots = rawStandings.Count(s => s.MadeCut);
+        var payoutTable = BuildPayoutPercentages(paidSpots);
         var currentPlace = 0;
         var displayedPlace = 0;
         int? priorScore = null;
@@ -94,8 +96,8 @@ public sealed class TournamentSimulator : ITournamentSimulator
             }
 
             priorScore = rawStanding.TotalScore;
-            var payout = rawStanding.MadeCut && displayedPlace <= PayoutPercentages.Length
-                ? decimal.Round(purse * PayoutPercentages[displayedPlace - 1], 2, MidpointRounding.AwayFromZero)
+            var payout = rawStanding.MadeCut && displayedPlace <= payoutTable.Count
+                ? decimal.Round(purse * payoutTable[displayedPlace - 1], 2, MidpointRounding.AwayFromZero)
                 : 0m;
 
             standings.Add(new TournamentStanding(
@@ -107,6 +109,33 @@ public sealed class TournamentSimulator : ITournamentSimulator
         }
 
         return standings;
+    }
+
+    private static IReadOnlyList<decimal> BuildPayoutPercentages(int paidSpots)
+    {
+        if (paidSpots <= 0)
+            return [];
+
+        var values = new List<decimal>(paidSpots);
+        for (var place = 1; place <= paidSpots; place++)
+        {
+            if (place <= PayoutPercentages.Length)
+            {
+                values.Add(PayoutPercentages[place - 1]);
+                continue;
+            }
+
+            var tail = PayoutPercentages[^1] * (decimal)Math.Pow(0.92, place - PayoutPercentages.Length);
+            values.Add(Math.Max(0.0002m, tail));
+        }
+
+        // Normalize to a realistic purse distribution pool.
+        const decimal payoutPool = 0.80m;
+        var total = values.Sum();
+        if (total <= 0m)
+            return values;
+
+        return values.Select(v => v * payoutPool / total).ToArray();
     }
 
     private int SimulateRound(Golfer golfer, Tournament tournament)

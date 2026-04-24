@@ -3,7 +3,6 @@ using GolfBrandSim.Core.Simulation;
 using GolfBrandSim.Game.App;
 using GolfBrandSim.Game.UI;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 
 namespace GolfBrandSim.Game.Screens;
 
@@ -19,19 +18,6 @@ public sealed class GolfersScreen : IScreen
 
     public void HandleInput(InputState input, GameSession session, Rectangle bounds)
     {
-        if (input.IsNewKeyPress(Keys.S))
-        {
-            _sortField = GolferSortField.Skill;
-        }
-        else if (input.IsNewKeyPress(Keys.P))
-        {
-            _sortField = GolferSortField.Popularity;
-        }
-        else if (input.IsNewKeyPress(Keys.C))
-        {
-            _sortField = GolferSortField.ContractShare;
-        }
-
         if (input.IsNewLeftClick())
         {
             TrySetSortFromButtonClick(input.MousePosition, bounds);
@@ -47,9 +33,14 @@ public sealed class GolfersScreen : IScreen
         DrawSortButtons(ui, bounds);
 
         var contracts = session.State.PlayerBrand.Contracts.ToDictionary(contract => contract.GolferId);
+        var competitorOwners = session.State.CompetitorBrands
+            .SelectMany(brand => brand.SponsoredGolferIds.Select(golferId => new { golferId, brand.Name }))
+            .GroupBy(entry => entry.golferId)
+            .ToDictionary(group => group.Key, group => group.First().Name);
+
         var orderedGolfers = OrderGolfers(session.State.Golfers, contracts);
         var rows = orderedGolfers
-            .Select(golfer => BuildRow(golfer, contracts))
+            .Select(golfer => BuildRow(golfer, contracts, competitorOwners))
             .ToArray();
 
         UiToolkit.DrawTable(
@@ -147,9 +138,19 @@ public sealed class GolfersScreen : IScreen
         };
     }
 
-    private static string[] BuildRow(Golfer golfer, IReadOnlyDictionary<Guid, SponsorshipContract> contracts)
+    private static string[] BuildRow(
+        Golfer golfer,
+        IReadOnlyDictionary<Guid, SponsorshipContract> contracts,
+        IReadOnlyDictionary<Guid, string> competitorOwners)
     {
-        var sponsored = contracts.TryGetValue(golfer.Id, out var contract);
+        var playerSponsored = contracts.TryGetValue(golfer.Id, out _);
+        var competitorSponsored = competitorOwners.TryGetValue(golfer.Id, out var competitorName);
+        var competitorTag = competitorName is null ? "RIVAL" : $"RIVAL {competitorName[..Math.Min(5, competitorName.Length)]}";
+        var status = playerSponsored
+            ? "CONTRACTED"
+            : competitorSponsored
+            ? competitorTag
+                : "SIGN";
 
         return
         [
@@ -161,7 +162,7 @@ public sealed class GolfersScreen : IScreen
             golfer.Approach.ToString(),
             golfer.Putting.ToString(),
             golfer.Marketability.ToString(),
-            sponsored ? "CONTRACTED" : "SIGN"
+            status
         ];
     }
 

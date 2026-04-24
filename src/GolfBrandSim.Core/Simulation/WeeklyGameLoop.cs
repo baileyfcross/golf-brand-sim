@@ -7,10 +7,14 @@ namespace GolfBrandSim.Core.Simulation;
 public sealed class WeeklyGameLoop
 {
     private readonly ITournamentSimulator _tournamentSimulator;
+    private readonly CompetitorSponsorshipService? _competitorSponsorshipService;
 
-    public WeeklyGameLoop(ITournamentSimulator tournamentSimulator)
+    public WeeklyGameLoop(
+        ITournamentSimulator tournamentSimulator,
+        CompetitorSponsorshipService? competitorSponsorshipService = null)
     {
         _tournamentSimulator = tournamentSimulator;
+        _competitorSponsorshipService = competitorSponsorshipService;
     }
 
     public WeekSimulationResult Advance(GameState state)
@@ -21,6 +25,9 @@ public sealed class WeeklyGameLoop
         }
 
         var weekNumber = state.CurrentWeekNumber;
+
+        _competitorSponsorshipService?.ProcessWeek(state);
+
         var tournament = state.SeasonSchedule.GetTournamentForWeek(weekNumber);
         var tournamentResult = _tournamentSimulator.Simulate(tournament, state.Golfers);
         var financeEntries = new List<FinanceEntry>();
@@ -87,35 +94,7 @@ public sealed class WeeklyGameLoop
         int weekNumber,
         ICollection<FinanceEntry> financeEntries)
     {
-        // Base demand multiplier from best sponsored finish
-        var sponsoredStandings = tournamentResult.Standings
-            .Where(s => brand.Contracts.Any(c => c.GolferId == s.Golfer.Id && c.IsActiveForWeek(weekNumber)))
-            .ToList();
-
-        var brandHeat = 1.0m;
-        if (sponsoredStandings.Count > 0)
-        {
-            var bestFinish = sponsoredStandings.Min(s => s.Place);
-            // Win is a big boost, top-5 meaningful, top-10 minor
-            brandHeat += Math.Max(0m, 0.20m - (bestFinish - 1) * 0.012m);
-
-            // Additional boost from golfer marketability (popularity × marketability effect)
-            var bestGolfer = sponsoredStandings.First(s => s.Place == bestFinish).Golfer;
-            var mktBoost = bestGolfer.Marketability * 0.0008m;
-            brandHeat += mktBoost;
-
-            // Seasonal wins bonus: each win this season by a contracted golfer adds a small permanent lift
-            var contractedIds = brand.Contracts
-                .Where(c => c.IsActiveForWeek(weekNumber))
-                .Select(c => c.GolferId)
-                .ToHashSet();
-
-            var seasonWins = contractedIds
-                .Where(id => state.SeasonStandings.Stats.TryGetValue(id, out var s) && s.Wins > 0)
-                .Sum(id => state.SeasonStandings.Stats[id].Wins);
-
-            brandHeat += seasonWins * 0.015m;
-        }
+        var brandHeat = ProductLaunchService.CalculateDemandMultiplier(brand, tournamentResult, state, weekNumber);
 
         decimal total = 0m;
         foreach (var product in brand.Products.Where(p => p.IsActive))

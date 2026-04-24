@@ -8,7 +8,7 @@ public sealed class SeasonStandings
 
     public void RecordResult(TournamentResult result)
     {
-        foreach (var standing in result.Standings.Where(s => s.MadeCut && s.PrizeMoney > 0))
+        foreach (var standing in result.Standings)
         {
             if (!_stats.TryGetValue(standing.Golfer.Id, out var stats))
             {
@@ -16,13 +16,25 @@ public sealed class SeasonStandings
                 _stats[standing.Golfer.Id] = stats;
             }
 
-            stats.RecordFinish(standing.Place, standing.PrizeMoney, result.Tournament.IsMajor);
+            stats.RecordFinish(standing.Place, standing.PrizeMoney, result.Tournament.IsMajor, standing.MadeCut);
         }
     }
 
-    public void RestoreStats(Guid golferId, int points, int wins, int top10s, decimal earnings)
+    public void RestoreStats(
+        Guid golferId,
+        int points,
+        int wins,
+        int top10s,
+        decimal earnings,
+        int eventsPlayed = 0,
+        int cutsMade = 0,
+        int majorWins = 0,
+        int bestFinish = 0,
+        int lastFinish = 0)
     {
-        _stats[golferId] = new GolferSeasonStats(golferId, points, wins, top10s, earnings);
+        _stats[golferId] = new GolferSeasonStats(
+            golferId, points, wins, top10s, earnings,
+            eventsPlayed, cutsMade, majorWins, bestFinish, lastFinish);
     }
 
     public IReadOnlyList<(GolferSeasonStats Stats, int Rank)> GetRankedList()

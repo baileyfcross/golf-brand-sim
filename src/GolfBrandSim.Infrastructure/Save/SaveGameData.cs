@@ -1,11 +1,12 @@
 using GolfBrandSim.Core.Enums;
+using GolfBrandSim.Core.Domain;
 
 namespace GolfBrandSim.Infrastructure.Save;
 
-// Version 2: full-state save (no replay from seed)
+// Version 3: full-state save with negotiations and competitor brands
 public sealed class SaveGameData
 {
-    public int Version { get; set; } = 2;
+    public int Version { get; set; } = 3;
 
     public BrandSaveData Brand { get; set; } = new();
 
@@ -21,7 +22,32 @@ public sealed class SaveGameData
 
     public int CurrentWeekNumber { get; set; }
 
+    public List<CompetitorBrandSaveData> CompetitorBrands { get; set; } = [];
+
+    public List<ContractOfferSaveData> RecentOffers { get; set; } = [];
+
     public LastWeekSaveData? LastWeekResult { get; set; }
+}
+
+public sealed class CompetitorBrandSaveData
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; } = "";
+    public string Specialization { get; set; } = "";
+    public int AggressionLevel { get; set; }
+    public List<Guid> SponsoredGolferIds { get; set; } = [];
+}
+
+public sealed class ContractOfferSaveData
+{
+    public Guid Id { get; set; }
+    public Guid GolferId { get; set; }
+    public decimal SigningBonus { get; set; }
+    public decimal WeeklyRetainer { get; set; }
+    public decimal WinningsShareRate { get; set; }
+    public int DurationWeeks { get; set; }
+    public int CreatedWeek { get; set; }
+    public ContractOfferStatus Status { get; set; }
 }
 
 public sealed class BrandSaveData
@@ -113,6 +139,11 @@ public sealed class GolferStatsSaveData
     public int Wins { get; set; }
     public int Top10s { get; set; }
     public decimal Earnings { get; set; }
+    public int EventsPlayed { get; set; }
+    public int CutsMade { get; set; }
+    public int MajorWins { get; set; }
+    public int BestFinish { get; set; }
+    public int LastFinish { get; set; }
 }
 
 public sealed class FinanceEntrySaveData

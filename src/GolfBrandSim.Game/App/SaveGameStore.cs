@@ -39,6 +39,8 @@ public sealed class SaveGameStore
             Tournaments = state.SeasonSchedule.Tournaments.Select(SerializeTournament).ToList(),
             SeasonStandings = SerializeStandings(state.SeasonStandings),
             FinanceLedger = state.FinanceLedger.Entries.Select(SerializeFinanceEntry).ToList(),
+            CompetitorBrands = state.CompetitorBrands.Select(SerializeCompetitorBrand).ToList(),
+            RecentOffers = state.RecentOffers.Select(SerializeOffer).ToList(),
             LastWeekResult = state.LastWeekResult is null ? null : SerializeLastWeek(state.LastWeekResult)
         };
 
@@ -85,6 +87,12 @@ public sealed class SaveGameStore
 
         var state = new GameState(brand, golfers, schedule, financeLedger);
 
+        foreach (var competitorData in data.CompetitorBrands)
+            state.CompetitorBrands.Add(DeserializeCompetitorBrand(competitorData));
+
+        foreach (var offerData in data.RecentOffers)
+            state.RecentOffers.Add(DeserializeOffer(offerData));
+
         // Restore standings
         RestoreStandings(state.SeasonStandings, data.SeasonStandings);
 
@@ -104,8 +112,11 @@ public sealed class SaveGameStore
             state.RecordWeek(isLast ? lastWeekResult! : CreatePlaceholderWeekResult(i));
         }
 
-        ITournamentSimulator simulator = new TournamentSimulator(Environment.TickCount);
-        return new GameSession(state, new WeeklyGameLoop(simulator));
+        var seed = Environment.TickCount;
+        ITournamentSimulator simulator = new TournamentSimulator(seed);
+        var competitorService = new CompetitorSponsorshipService(new Random(seed + 17));
+        var negotiationService = new ContractNegotiationService(new Random(seed + 31));
+        return new GameSession(state, new WeeklyGameLoop(simulator, competitorService), negotiationService);
     }
 
     private static void RestoreStandings(SeasonStandings standings, StandingsSaveData data)
@@ -113,7 +124,19 @@ public sealed class SaveGameStore
         foreach (var (idStr, statsData) in data.Stats)
         {
             if (Guid.TryParse(idStr, out var id))
-                standings.RestoreStats(id, statsData.Points, statsData.Wins, statsData.Top10s, statsData.Earnings);
+            {
+                standings.RestoreStats(
+                    id,
+                    statsData.Points,
+                    statsData.Wins,
+                    statsData.Top10s,
+                    statsData.Earnings,
+                    statsData.EventsPlayed,
+                    statsData.CutsMade,
+                    statsData.MajorWins,
+                    statsData.BestFinish,
+                    statsData.LastFinish);
+            }
         }
     }
 
@@ -241,10 +264,74 @@ public sealed class SaveGameStore
         {
             data.Stats[id.ToString()] = new GolferStatsSaveData
             {
-                Points = stats.Points, Wins = stats.Wins, Top10s = stats.Top10s, Earnings = stats.Earnings
+                Points = stats.Points,
+                Wins = stats.Wins,
+                Top10s = stats.Top10s,
+                Earnings = stats.Earnings,
+                EventsPlayed = stats.EventsPlayed,
+                CutsMade = stats.CutsMade,
+                MajorWins = stats.MajorWins,
+                BestFinish = stats.BestFinish,
+                LastFinish = stats.LastFinish
             };
         }
         return data;
+    }
+
+    private static CompetitorBrandSaveData SerializeCompetitorBrand(CompetitorBrand brand) => new()
+    {
+        Id = brand.Id,
+        Name = brand.Name,
+        Specialization = brand.Specialization,
+        AggressionLevel = brand.AggressionLevel,
+        SponsoredGolferIds = brand.SponsoredGolferIds.ToList()
+    };
+
+    private static CompetitorBrand DeserializeCompetitorBrand(CompetitorBrandSaveData data)
+    {
+        var brand = new CompetitorBrand(data.Id, data.Name, data.Specialization, data.AggressionLevel);
+        foreach (var golferId in data.SponsoredGolferIds)
+            brand.SignGolfer(golferId);
+        return brand;
+    }
+
+    private static ContractOfferSaveData SerializeOffer(ContractOffer offer) => new()
+    {
+        Id = offer.Id,
+        GolferId = offer.GolferId,
+        SigningBonus = offer.SigningBonus,
+        WeeklyRetainer = offer.WeeklyRetainer,
+        WinningsShareRate = offer.WinningsShareRate,
+        DurationWeeks = offer.DurationWeeks,
+        CreatedWeek = offer.CreatedWeek,
+        Status = offer.Status
+    };
+
+    private static ContractOffer DeserializeOffer(ContractOfferSaveData data)
+    {
+        var offer = new ContractOffer(
+            data.Id,
+            data.GolferId,
+            data.SigningBonus,
+            data.WeeklyRetainer,
+            data.WinningsShareRate,
+            data.DurationWeeks,
+            data.CreatedWeek);
+
+        switch (data.Status)
+        {
+            case ContractOfferStatus.Accepted:
+                offer.Accept();
+                break;
+            case ContractOfferStatus.Rejected:
+                offer.Reject();
+                break;
+            case ContractOfferStatus.Expired:
+                offer.Expire();
+                break;
+        }
+
+        return offer;
     }
 
     private static FinanceEntrySaveData SerializeFinanceEntry(FinanceEntry e) => new()

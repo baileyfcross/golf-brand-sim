@@ -108,4 +108,32 @@ public sealed class Brand
 
         return justUnlocked;
     }
+
+    /// <summary>
+    /// Signs a golfer using a custom negotiated offer. Deducts signing bonus from cash.
+    /// Returns false if already contracted or insufficient cash.
+    /// </summary>
+    public bool SignGolferFromOffer(ContractOffer offer, int currentWeek)
+    {
+        if (Contracts.Any(c => c.GolferId == offer.GolferId && c.IsActiveForWeek(currentWeek)))
+            return false;
+
+        if (CashBalance < offer.SigningBonus)
+            return false;
+
+        CashBalance -= offer.SigningBonus;
+
+        var annualRetainer = offer.WeeklyRetainer * 52m;
+        var endWeek = currentWeek + offer.DurationWeeks - 1;
+
+        Contracts.Add(new SponsorshipContract(
+            offer.GolferId,
+            "CUSTOM DEAL",
+            offer.WinningsShareRate,
+            annualRetainer,
+            currentWeek,
+            endWeek));
+
+        return true;
+    }
 }

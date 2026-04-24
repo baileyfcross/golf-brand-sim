@@ -44,7 +44,7 @@ public sealed class SeasonAndSimulationTests
         Assert.Equal(2, session.State.CurrentWeekNumber);
         Assert.Single(session.State.CompletedWeeks);
         Assert.Same(result, session.State.LastWeekResult);
-        Assert.NotEmpty(session.State.FinanceLedger.Entries.Where(entry => entry.WeekNumber == 1));
+        Assert.Contains(session.State.FinanceLedger.Entries, entry => entry.WeekNumber == 1);
         Assert.Equal(result.EndingCashBalance, session.State.PlayerBrand.CashBalance);
     }
 }

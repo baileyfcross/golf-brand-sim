@@ -170,20 +170,7 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
         var items = GetMainMenuItems();
         _menuHoverIndex = GetHoveredMenuIndex(input.MousePosition, items.Count, 300);
 
-        if (input.IsNewKeyPress(Keys.Down))
-        {
-            _menuHoverIndex = (_menuHoverIndex + 1 + items.Count) % items.Count;
-        }
-        else if (input.IsNewKeyPress(Keys.Up))
-        {
-            _menuHoverIndex = (_menuHoverIndex - 1 + items.Count) % items.Count;
-        }
-
         if (input.IsNewLeftClick() && _menuHoverIndex >= 0)
-        {
-            HandleMainMenuSelection(items[_menuHoverIndex]);
-        }
-        else if (input.IsNewKeyPress(Keys.Enter) && _menuHoverIndex >= 0)
         {
             HandleMainMenuSelection(items[_menuHoverIndex]);
         }
@@ -232,31 +219,6 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
     {
         var rows = GetOptionsRows();
         _optionsHoverIndex = GetHoveredMenuIndex(input.MousePosition, rows.Count, 250);
-
-        if (input.IsNewKeyPress(Keys.Down))
-        {
-            _optionsHoverIndex = (_optionsHoverIndex + 1 + rows.Count) % rows.Count;
-        }
-        else if (input.IsNewKeyPress(Keys.Up))
-        {
-            _optionsHoverIndex = (_optionsHoverIndex - 1 + rows.Count) % rows.Count;
-        }
-
-        if (_optionsHoverIndex >= 0)
-        {
-            if (input.IsNewKeyPress(Keys.Left))
-            {
-                ApplyOptionsChange(_optionsHoverIndex, -1);
-            }
-            else if (input.IsNewKeyPress(Keys.Right))
-            {
-                ApplyOptionsChange(_optionsHoverIndex, 1);
-            }
-            else if (input.IsNewKeyPress(Keys.Enter))
-            {
-                ApplyOptionsChange(_optionsHoverIndex, 1);
-            }
-        }
 
         if (!input.IsNewLeftClick() || _optionsHoverIndex < 0)
         {
@@ -383,7 +345,7 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
             ui.DrawCenteredText(_menuMessage, new Rectangle(frame.Width / 2 - 250, frame.Height - 120, 500, 40), Theme.TextMuted, 2);
         }
 
-        ui.DrawCenteredText("CLICK TO SELECT. ENTER AND ESC REMAIN AVAILABLE.", new Rectangle(frame.Width / 2 - 300, frame.Height - 80, 600, 36), Theme.TextMuted, 2);
+        ui.DrawCenteredText("CLICK TO SELECT. ESC TO EXIT.", new Rectangle(frame.Width / 2 - 300, frame.Height - 80, 600, 36), Theme.TextMuted, 2);
     }
 
     private void DrawOptionsMenu(UiContext ui)
@@ -418,7 +380,7 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
             }
         }
 
-        ui.DrawCenteredText("CLICK ARROWS TO CHANGE SETTINGS. ESC RETURNS TO MENU.", new Rectangle(frame.Width / 2 - 330, frame.Height - 80, 660, 36), Theme.TextMuted, 2);
+        ui.DrawCenteredText("CLICK ARROWS TO CHANGE SETTINGS. ESC OR BACK TO RETURN.", new Rectangle(frame.Width / 2 - 330, frame.Height - 80, 660, 36), Theme.TextMuted, 2);
     }
 
     private int GetHoveredMenuIndex(Point mousePosition, int rowCount, int top)
@@ -471,10 +433,10 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
         return $"{Math.Round(value * 100f):0}%";
     }
 
-    private void StartNewGame(string brandName, ProductCategory specialization)
+    private void StartNewGame(string brandName, ProductCategory specialization, GameDifficulty difficulty)
     {
         var seed = Environment.TickCount;
-        var session = InitialGameStateFactory.Create(brandName, specialization, seed);
+        var session = InitialGameStateFactory.Create(brandName, specialization, difficulty, seed);
         AttachSession(session);
     }
 
@@ -497,12 +459,20 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
     {
         var frame = GraphicsDevice.Viewport.Bounds;
         _brandCreationState.SpecializationHoverIndex = -1;
+        _brandCreationState.DifficultyHoverIndex = -1;
 
         var categories = Enum.GetValues<ProductCategory>();
         for (var i = 0; i < categories.Length; i++)
         {
             if (GetSpecializationCardBounds(frame, i).Contains(input.MousePosition))
                 _brandCreationState.SpecializationHoverIndex = i;
+        }
+
+        var difficulties = Enum.GetValues<GameDifficulty>();
+        for (var i = 0; i < difficulties.Length; i++)
+        {
+            if (GetDifficultyCardBounds(frame, i).Contains(input.MousePosition))
+                _brandCreationState.DifficultyHoverIndex = i;
         }
 
         _brandCreationState.ConfirmHovered = GetBrandConfirmBounds(frame).Contains(input.MousePosition);
@@ -515,17 +485,20 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
                     _brandCreationState.SelectedSpecialization = categories[i];
             }
 
+            for (var i = 0; i < difficulties.Length; i++)
+            {
+                if (GetDifficultyCardBounds(frame, i).Contains(input.MousePosition))
+                    _brandCreationState.SelectedDifficulty = difficulties[i];
+            }
+
             if (_brandCreationState.ConfirmHovered && _brandNameBuffer.Length > 0)
             {
-                StartNewGame(_brandNameBuffer.ToString(), _brandCreationState.SelectedSpecialization);
+                StartNewGame(
+                    _brandNameBuffer.ToString(),
+                    _brandCreationState.SelectedSpecialization,
+                    _brandCreationState.SelectedDifficulty);
                 _mode = AppMode.InGame;
             }
-        }
-
-        if (input.IsNewKeyPress(Keys.Enter) && _brandNameBuffer.Length > 0)
-        {
-            StartNewGame(_brandNameBuffer.ToString(), _brandCreationState.SelectedSpecialization);
-            _mode = AppMode.InGame;
         }
     }
 
@@ -563,7 +536,23 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
             ui.DrawCenteredText(desc.Split('\n')[1], new Rectangle(cardBounds.X, cardBounds.Y + 72, cardBounds.Width, 20), selected ? Theme.Header : Theme.TextMuted, 1);
         }
 
-        ui.DrawCenteredText("CLICK A SPECIALIZATION, ENTER YOUR BRAND NAME, THEN PRESS ENTER OR CONFIRM.", new Rectangle(frame.Width / 2 - 370, 374, 740, 24), Theme.TextMuted, 1);
+        ui.DrawText("DIFFICULTY", new Vector2(frame.Width / 2 - 370, 364), Theme.TextMuted, 2);
+
+        for (var i = 0; i < 3; i++)
+        {
+            var difficulty = (GameDifficulty)i;
+            var cardBounds = GetDifficultyCardBounds(frame, i);
+            var selected = _brandCreationState.SelectedDifficulty == difficulty;
+            var hovered = _brandCreationState.DifficultyHoverIndex == i;
+
+            ui.FillRectangle(cardBounds, selected ? Theme.Accent : hovered ? Theme.HighlightRow : Theme.PanelRaised);
+            ui.DrawBorder(cardBounds, selected ? Theme.AccentHighlight : Theme.PanelBorder, 2);
+            ui.DrawCenteredText(difficulty.ToString().ToUpperInvariant(), cardBounds, selected ? Theme.Header : Theme.TextPrimary, 2);
+        }
+
+        ui.DrawCenteredText("LEFT/RIGHT OR CLICK TO CHANGE DIFFICULTY", new Rectangle(frame.Width / 2 - 370, 426, 740, 20), Theme.TextMuted, 1);
+
+        ui.DrawCenteredText("CLICK A SPECIALIZATION, PICK DIFFICULTY, ENTER BRAND NAME, THEN CONFIRM.", new Rectangle(frame.Width / 2 - 370, 450, 740, 24), Theme.TextMuted, 1);
 
         var confirmBounds = GetBrandConfirmBounds(frame);
         var ready = _brandNameBuffer.Length > 0;
@@ -586,6 +575,16 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
 
     private static Rectangle GetBrandConfirmBounds(Rectangle frame)
     {
-        return new Rectangle(frame.Width / 2 - 140, 398, 280, 46);
+        return new Rectangle(frame.Width / 2 - 140, 470, 280, 46);
+    }
+
+    private static Rectangle GetDifficultyCardBounds(Rectangle frame, int index)
+    {
+        const int cardWidth = 226;
+        const int cardHeight = 44;
+        const int startY = 384;
+        var totalWidth = cardWidth * 3 + 16 * 2;
+        var startX = frame.Width / 2 - totalWidth / 2;
+        return new Rectangle(startX + index * (cardWidth + 16), startY, cardWidth, cardHeight);
     }
 }

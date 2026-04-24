@@ -2,7 +2,6 @@ using GolfBrandSim.Core.Simulation;
 using GolfBrandSim.Game.Screens;
 using GolfBrandSim.Game.UI;
 using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Input;
 
 namespace GolfBrandSim.Game.App;
 
@@ -31,7 +30,8 @@ public sealed class ScreenManager
             new TournamentResultsScreen(),
             new FinanceScreen(),
             new ProductManagementScreen(),
-            new ResearchScreen()
+            new ResearchScreen(),
+            new SponsorshipMarketScreen()
         ];
     }
 
@@ -50,63 +50,12 @@ public sealed class ScreenManager
         _advanceButtonHovered = advanceButtonBounds.Contains(input.MousePosition);
         _mainMenuButtonHovered = mainMenuButtonBounds.Contains(input.MousePosition);
 
-        if (input.IsNewKeyPress(Keys.F1))
-        {
-            _selectedIndex = 0;
-        }
-        else if (input.IsNewKeyPress(Keys.F2))
-        {
-            _selectedIndex = 1;
-        }
-        else if (input.IsNewKeyPress(Keys.F3))
-        {
-            _selectedIndex = 2;
-        }
-        else if (input.IsNewKeyPress(Keys.F4))
-        {
-            _selectedIndex = 3;
-        }
-        else if (input.IsNewKeyPress(Keys.F5))
-        {
-            _selectedIndex = 4;
-        }
-        else if (input.IsNewKeyPress(Keys.F6))
-        {
-            _selectedIndex = 5;
-        }
-        else if (input.IsNewKeyPress(Keys.F7))
-        {
-            _selectedIndex = 6;
-        }
-        else if (input.IsNewKeyPress(Keys.F8))
-        {
-            _selectedIndex = 7;
-        }
-        else if (input.IsNewKeyPress(Keys.F9))
-        {
-            _selectedIndex = 8;
-        }
-        else if (input.IsNewKeyPress(Keys.Right))
-        {
-            _selectedIndex = (_selectedIndex + 1) % _screens.Count;
-        }
-        else if (input.IsNewKeyPress(Keys.Left))
-        {
-            _selectedIndex = (_selectedIndex - 1 + _screens.Count) % _screens.Count;
-        }
-
         if (input.IsNewLeftClick() && _hoveredTabIndex >= 0)
         {
             _selectedIndex = _hoveredTabIndex;
         }
 
-        if (input.IsNewKeyPress(Keys.Space) && Session.CanAdvanceWeek)
-        {
-            Session.AdvanceWeek();
-            _selectedIndex = 3;
-            _onWeekAdvanced?.Invoke();
-        }
-        else if (input.IsNewLeftClick() && _advanceButtonHovered && Session.CanAdvanceWeek)
+        if (input.IsNewLeftClick() && _advanceButtonHovered && Session.CanAdvanceWeek)
         {
             Session.AdvanceWeek();
             _selectedIndex = 3;
@@ -163,7 +112,7 @@ public sealed class ScreenManager
     private void DrawFooter(UiContext ui, Rectangle frame)
     {
         var footerBounds = new Rectangle(40, frame.Height - 46, frame.Width - 80, 28);
-        ui.DrawText("CLICK TABS, ADVANCE WEEK, OR MAIN MENU. KEYBOARD SHORTCUTS STILL AVAILABLE.", new Vector2(footerBounds.X, footerBounds.Y), Theme.TextMuted, 2);
+        ui.DrawText("CLICK TABS TO NAVIGATE. USE ADVANCE WEEK OR MAIN MENU BUTTONS.", new Vector2(footerBounds.X, footerBounds.Y), Theme.TextMuted, 2);
 
         var menuBounds = GetMainMenuButtonBounds(frame);
         ui.FillRectangle(menuBounds, _mainMenuButtonHovered ? Theme.HighlightRow : Theme.PanelRaised);
