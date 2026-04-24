@@ -104,10 +104,7 @@ public sealed class SponsorshipMarketScreen : IScreen
         ui.FillRectangle(submitBounds, Theme.Accent);
         ui.DrawBorder(submitBounds, Theme.AccentHighlight, 2);
         ui.DrawCenteredText("SUBMIT OFFER", submitBounds, Theme.Header, 2);
-
-        var hint = "CLICK A ROW TO SELECT GOLFER | CLICK +/- TO ADJUST TERMS";
-        ui.DrawText(hint, new Vector2(bounds.X + 18, bounds.Bottom - 58), Theme.TextMuted, 1);
-        ui.DrawText(_feedback, new Vector2(bounds.X + 18, bounds.Bottom - 38), Theme.TextPrimary, 1);
+        ui.DrawText(_feedback, new Vector2(bounds.X + 28, bounds.Bottom - 58), Theme.TextPrimary, 1);
     }
 
     private bool TrySelectGolferFromClick(Point mousePosition, Rectangle bounds, int golferCount)
@@ -224,12 +221,13 @@ public sealed class SponsorshipMarketScreen : IScreen
 
     private static Rectangle GetMarketTableBounds(Rectangle bounds)
     {
-        return new Rectangle(bounds.X + 16, bounds.Y + 52, bounds.Width - 32, 540);
+        var tableBottom = GetTermsBounds(bounds).Y - 8;
+        return new Rectangle(bounds.X + 16, bounds.Y + 52, bounds.Width - 32, tableBottom - (bounds.Y + 52));
     }
 
     private static Rectangle GetTermsBounds(Rectangle bounds)
     {
-        return new Rectangle(bounds.X + 16, bounds.Bottom - 158, bounds.Width - 32, 92);
+        return new Rectangle(bounds.X + 16, bounds.Bottom - 148, bounds.Width - 32, 172);
     }
 
     private static Rectangle GetOfferFieldRowBounds(Rectangle bounds, OfferField field)
