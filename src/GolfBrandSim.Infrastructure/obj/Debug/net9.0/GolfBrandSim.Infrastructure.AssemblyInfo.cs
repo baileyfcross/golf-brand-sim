@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("GolfBrandSim.Infrastructure")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+00201c3e46387057f0aa8f17df9d454679809965")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+73aa0ead0b312b496915f508301673f03ef8a0e4")]
 [assembly: System.Reflection.AssemblyProductAttribute("GolfBrandSim.Infrastructure")]
 [assembly: System.Reflection.AssemblyTitleAttribute("GolfBrandSim.Infrastructure")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -10,8 +10,8 @@ namespace GolfBrandSim.Game.Screens;
 public sealed class GolfersScreen : IScreen
 {
     private static readonly int[] ColumnWidths = [230, 55, 50, 60, 65, 65, 60, 65, 110];
-    private const int SortButtonWidth = 170;
-    private const int SortButtonHeight = 30;
+    private const int SortButtonWidth = 230;
+    private const int SortButtonHeight = 40;
 
     private GolferSortField _sortField = GolferSortField.Skill;
 
@@ -128,7 +128,7 @@ public sealed class GolfersScreen : IScreen
 
     private static Rectangle GetTableBounds(Rectangle bounds)
     {
-        return new Rectangle(bounds.X + 16, bounds.Y + 98, bounds.Width - 32, bounds.Height - 114);
+        return new Rectangle(bounds.X + 16, bounds.Y + 108, bounds.Width - 32, bounds.Height - 124);
     }
 
     private static Rectangle GetSortButtonBounds(Rectangle bounds, int index)

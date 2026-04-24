@@ -20,13 +20,13 @@ public sealed class DashboardScreen : IScreen
         var nextTournament = state.NextTournament;
         var lastWeek = state.LastWeekResult;
 
-        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X, bounds.Y, 250, 120), "CASH", Formatters.Money(state.PlayerBrand.CashBalance), "WORKING CAPITAL");
-        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 270, bounds.Y, 320, 120), "NEXT EVENT", nextTournament?.Name ?? "SEASON COMPLETE", nextTournament?.IsMajor == true ? "MAJOR WEEK" : "STANDARD WEEK");
-        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 610, bounds.Y, 220, 120), "SPONSORED", state.PlayerBrand.Contracts.Count.ToString(), "ACTIVE CONTRACTS");
-        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 850, bounds.Y, 220, 120), "PRODUCTS", state.PlayerBrand.Products.Count.ToString(), state.PlayerBrand.Specialization.ToString().ToUpperInvariant());
-        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 1090, bounds.Y, 250, 120), "LAST NET", lastWeek is null ? "NO RESULT" : Formatters.Money(lastWeek.NetCashChange), lastWeek is null ? "SIMULATE FIRST WEEK" : Formatters.WeekLabel(lastWeek.WeekNumber));
+        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X, bounds.Y, 250, 100), "CASH", Formatters.Money(state.PlayerBrand.CashBalance), "WORKING CAPITAL");
+        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 270, bounds.Y, 320, 100), "NEXT EVENT", nextTournament?.Name ?? "SEASON COMPLETE", nextTournament?.IsMajor == true ? "MAJOR WEEK" : "STANDARD WEEK");
+        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 610, bounds.Y, 230, 100), "SPONSORED", state.PlayerBrand.Contracts.Count.ToString(), "ACTIVE CONTRACTS");
+        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 860, bounds.Y, 220, 100), "PRODUCTS", state.PlayerBrand.Products.Count.ToString(), state.PlayerBrand.Specialization.ToString().ToUpperInvariant());
+        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 1100, bounds.Y, 260, 100), "LAST NET", lastWeek is null ? "NO RESULT" : Formatters.Money(lastWeek.NetCashChange), lastWeek is null ? "SIMULATE FIRST WEEK" : Formatters.WeekLabel(lastWeek.WeekNumber));
 
-        var contractsBounds = new Rectangle(bounds.X, bounds.Y + 150, 760, bounds.Height - 150);
+        var contractsBounds = new Rectangle(bounds.X, bounds.Y + 130, 760, bounds.Height - 130);
         UiToolkit.DrawPanel(ui, contractsBounds, "SPONSORED GOLFERS");
 
         var contractRows = state.PlayerBrand.Contracts
@@ -40,7 +40,7 @@ public sealed class DashboardScreen : IScreen
             [240, 90, 110, 130, 140],
             contractRows);
 
-        var researchBounds = new Rectangle(bounds.X + 780, bounds.Y + 150, bounds.Width - 780, bounds.Height - 150);
+        var researchBounds = new Rectangle(bounds.X + 780, bounds.Y + 130, bounds.Width - 780, bounds.Height - 130);
         UiToolkit.DrawPanel(ui, researchBounds, "CATEGORY RESEARCH");
 
         var researchRows = state.PlayerBrand.ResearchTracks
@@ -59,7 +59,7 @@ public sealed class DashboardScreen : IScreen
             [180, 170, 120],
             researchRows);
 
-        var notesBounds = new Rectangle(researchBounds.X + 16, researchBounds.Y + 260, researchBounds.Width - 32, researchBounds.Height - 276);
+        var notesBounds = new Rectangle(researchBounds.X + 16, researchBounds.Y + 240, researchBounds.Width - 32, researchBounds.Height - 256);
         UiToolkit.DrawPanel(ui, notesBounds, "WEEKLY SNAPSHOT");
 
         var winner = lastWeek?.TournamentResult.Winner;
@@ -73,7 +73,7 @@ public sealed class DashboardScreen : IScreen
 
         for (var index = 0; index < lines.Length; index++)
         {
-            ui.DrawText(lines[index], new Vector2(notesBounds.X + 18, notesBounds.Y + 56 + index * 28), Theme.TextPrimary, 2);
+            ui.DrawText(lines[index], new Vector2(notesBounds.X + 18, notesBounds.Y + 56 + index * 34), Theme.TextPrimary, 2);
         }
     }
 

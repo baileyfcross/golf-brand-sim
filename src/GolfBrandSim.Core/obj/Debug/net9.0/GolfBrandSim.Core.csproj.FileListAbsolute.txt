@@ -5,8 +5,8 @@ C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Core\ob
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Core\obj\Debug\net9.0\GolfBrandSim.Core.AssemblyInfoInputs.cache
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Core\obj\Debug\net9.0\GolfBrandSim.Core.AssemblyInfo.cs
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Core\obj\Debug\net9.0\GolfBrandSim.Core.csproj.CoreCompileInputs.cache
+C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Core\obj\Debug\net9.0\GolfBrandSim.Core.sourcelink.json
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Core\obj\Debug\net9.0\GolfBrandSim.Core.dll
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Core\obj\Debug\net9.0\refint\GolfBrandSim.Core.dll
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Core\obj\Debug\net9.0\GolfBrandSim.Core.pdb
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Core\obj\Debug\net9.0\ref\GolfBrandSim.Core.dll
-C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Core\obj\Debug\net9.0\GolfBrandSim.Core.sourcelink.json

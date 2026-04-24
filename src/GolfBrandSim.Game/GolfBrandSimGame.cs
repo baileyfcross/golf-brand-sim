@@ -50,13 +50,14 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
         IsFixedTimeStep = true;
         Window.AllowUserResizing = true;
         Window.Title = "Golf Brand Sim";
+        Content.RootDirectory = "Content";
     }
 
     protected override void LoadContent()
     {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
         _primitiveBatch = new PrimitiveBatch(GraphicsDevice);
-        _pixelFont = new PixelFont();
+        _pixelFont = new PixelFont(Content.Load<SpriteFont>("Fonts/Roboto"));
 
         _mode = AppMode.MainMenu;
         _menuMessage = _saveGameStore.HasSaveFile() ? "SAVE SLOT READY" : "NO SAVED GAME FOUND";
@@ -364,8 +365,8 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
     {
         var frame = ui.ViewportBounds;
         UiToolkit.DrawPanel(ui, new Rectangle(frame.Width / 2 - 360, 90, 720, frame.Height - 180), "MAIN MENU");
-        ui.DrawText("GOLF BRAND SIM", new Vector2(frame.Width / 2 - 182, 140), Theme.TextPrimary, 4);
-        ui.DrawText("MANAGE YOUR BRAND, ROSTER, AND WEEKLY TOUR SEASON", new Vector2(frame.Width / 2 - 286, 190), Theme.TextMuted, 2);
+        ui.DrawCenteredText("GOLF BRAND SIM", new Rectangle(frame.Width / 2 - 340, 132, 680, 46), Theme.TextPrimary, 3);
+        ui.DrawCenteredText("MANAGE YOUR BRAND, ROSTER, AND WEEKLY TOUR SEASON", new Rectangle(frame.Width / 2 - 340, 186, 680, 22), Theme.TextMuted, 1);
 
         var items = GetMainMenuItems();
         for (var index = 0; index < items.Count; index++)
@@ -389,7 +390,7 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
     {
         var frame = ui.ViewportBounds;
         UiToolkit.DrawPanel(ui, new Rectangle(frame.Width / 2 - 440, 90, 880, frame.Height - 180), "OPTIONS");
-        ui.DrawText("DISPLAY AND AUDIO", new Vector2(frame.Width / 2 - 180, 140), Theme.TextPrimary, 3);
+        ui.DrawCenteredText("DISPLAY AND AUDIO", new Rectangle(frame.Width / 2 - 420, 132, 840, 46), Theme.TextPrimary, 2);
 
         var rows = GetOptionsRows();
         for (var index = 0; index < rows.Count; index++)
@@ -538,7 +539,7 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
         ui.FillRectangle(nameFieldBounds, Theme.Panel);
         ui.DrawBorder(nameFieldBounds, Theme.Accent, 2);
         var displayName = _brandNameBuffer.Length > 0 ? _brandNameBuffer.ToString() + "_" : "_";
-        ui.DrawText(displayName, new Vector2(nameFieldBounds.X + 14, nameFieldBounds.Y + 12), Theme.TextPrimary, 3);
+        ui.DrawText(displayName, new Vector2(nameFieldBounds.X + 14, nameFieldBounds.Y + 9), Theme.TextPrimary, 2);
 
         ui.DrawText("SPECIALIZATION", new Vector2(frame.Width / 2 - 370, 224), Theme.TextMuted, 2);
 
@@ -551,18 +552,18 @@ public sealed class GolfBrandSimGame : Microsoft.Xna.Framework.Game
             var hovered = _brandCreationState.SpecializationHoverIndex == i;
             ui.FillRectangle(cardBounds, selected ? Theme.Accent : hovered ? Theme.HighlightRow : Theme.PanelRaised);
             ui.DrawBorder(cardBounds, selected ? Theme.AccentHighlight : Theme.PanelBorder, 2);
-            ui.DrawCenteredText(cat.ToString().ToUpperInvariant(), new Rectangle(cardBounds.X, cardBounds.Y + 12, cardBounds.Width, 24), selected ? Theme.Header : Theme.TextPrimary, 3);
+            ui.DrawCenteredText(cat.ToString().ToUpperInvariant(), new Rectangle(cardBounds.X, cardBounds.Y + 16, cardBounds.Width, 30), selected ? Theme.Header : Theme.TextPrimary, 2);
             var desc = cat switch
             {
                 ProductCategory.Apparel => "FASHION FORWARD\nHIGH ENGAGEMENT",
                 ProductCategory.Accessories => "STRONG MARGINS\nBALANCED REVENUE",
                 _ => "PERFORMANCE GEAR\nHIGH REVENUE BASE"
             };
-            ui.DrawCenteredText(desc.Split('\n')[0], new Rectangle(cardBounds.X, cardBounds.Y + 52, cardBounds.Width, 20), selected ? Theme.Header : Theme.TextMuted, 2);
-            ui.DrawCenteredText(desc.Split('\n')[1], new Rectangle(cardBounds.X, cardBounds.Y + 72, cardBounds.Width, 20), selected ? Theme.Header : Theme.TextMuted, 2);
+            ui.DrawCenteredText(desc.Split('\n')[0], new Rectangle(cardBounds.X, cardBounds.Y + 54, cardBounds.Width, 20), selected ? Theme.Header : Theme.TextMuted, 1);
+            ui.DrawCenteredText(desc.Split('\n')[1], new Rectangle(cardBounds.X, cardBounds.Y + 72, cardBounds.Width, 20), selected ? Theme.Header : Theme.TextMuted, 1);
         }
 
-        ui.DrawText("CLICK A SPECIALIZATION, ENTER YOUR BRAND NAME, THEN PRESS ENTER OR CONFIRM.", new Vector2(frame.Width / 2 - 370, 374), Theme.TextMuted, 2);
+        ui.DrawCenteredText("CLICK A SPECIALIZATION, ENTER YOUR BRAND NAME, THEN PRESS ENTER OR CONFIRM.", new Rectangle(frame.Width / 2 - 370, 374, 740, 24), Theme.TextMuted, 1);
 
         var confirmBounds = GetBrandConfirmBounds(frame);
         var ready = _brandNameBuffer.Length > 0;

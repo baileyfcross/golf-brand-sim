@@ -117,3 +117,4 @@ C:\Users\baley\Documents\Coding Projects\golf-brand-sim\tests\GolfBrandSim.Tests
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\tests\GolfBrandSim.Tests\bin\Debug\net9.0\runtimes\win-x86\native\SDL2.dll
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\tests\GolfBrandSim.Tests\bin\Debug\net9.0\runtimes\win-x86\native\soft_oal.dll
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\tests\GolfBrandSim.Tests\obj\Debug\net9.0\GolfBrandSim.Tests.sourcelink.json
+C:\Users\baley\Documents\Coding Projects\golf-brand-sim\tests\GolfBrandSim.Tests\bin\Debug\net9.0\Content\Fonts\Roboto.xnb

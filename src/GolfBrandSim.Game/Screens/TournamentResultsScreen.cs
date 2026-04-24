@@ -29,11 +29,11 @@ public sealed class TournamentResultsScreen : IScreen
         var tournament = weekResult.TournamentResult.Tournament;
         var winner = weekResult.TournamentResult.Winner;
 
-        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 16, bounds.Y + 52, 340, 110), tournament.Name, winner.Golfer.FullName.ToUpperInvariant(), $"WINNING SCORE {winner.TotalScore}");
-        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 376, bounds.Y + 52, 220, 110), "CUT", weekResult.TournamentResult.CutScore.ToString(), "AFTER ROUND TWO");
-        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 616, bounds.Y + 52, 220, 110), "SPONSOR INCOME", Formatters.Money(weekResult.SponsorshipIncome), "THIS WEEK");
-        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 856, bounds.Y + 52, 220, 110), "PRODUCT PROFIT", Formatters.Money(weekResult.ProductProfit), "THIS WEEK");
-        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 1096, bounds.Y + 52, 220, 110), "NET CASH", Formatters.Money(weekResult.NetCashChange), Formatters.WeekLabel(weekResult.WeekNumber));
+        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 16, bounds.Y + 52, 340, 100), tournament.Name, winner.Golfer.FullName.ToUpperInvariant(), $"WINNING SCORE {winner.TotalScore}");
+        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 376, bounds.Y + 52, 220, 100), "CUT", weekResult.TournamentResult.CutScore.ToString(), "AFTER ROUND TWO");
+        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 616, bounds.Y + 52, 220, 100), "SPONSOR INCOME", Formatters.Money(weekResult.SponsorshipIncome), "THIS WEEK");
+        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 856, bounds.Y + 52, 220, 100), "PRODUCT PROFIT", Formatters.Money(weekResult.ProductProfit), "THIS WEEK");
+        UiToolkit.DrawSummaryCard(ui, new Rectangle(bounds.X + 1096, bounds.Y + 52, 220, 100), "NET CASH", Formatters.Money(weekResult.NetCashChange), Formatters.WeekLabel(weekResult.WeekNumber));
 
         var rows = weekResult.TournamentResult.Standings
             .Take(12)
@@ -42,7 +42,7 @@ public sealed class TournamentResultsScreen : IScreen
 
         UiToolkit.DrawTable(
             ui,
-            new Rectangle(bounds.X + 16, bounds.Y + 190, bounds.Width - 32, bounds.Height - 206),
+            new Rectangle(bounds.X + 16, bounds.Y + 180, bounds.Width - 32, bounds.Height - 196),
             ["POS", "GOLFER", "TOTAL", "PAYOUT", "SPONSORED"],
             [90, 320, 120, 160, 160],
             rows);

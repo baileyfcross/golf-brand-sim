@@ -8,9 +8,9 @@ C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Infrast
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Infrastructure\obj\Debug\net9.0\GolfBrandSim.Infrastructure.AssemblyInfoInputs.cache
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Infrastructure\obj\Debug\net9.0\GolfBrandSim.Infrastructure.AssemblyInfo.cs
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Infrastructure\obj\Debug\net9.0\GolfBrandSim.Infrastructure.csproj.CoreCompileInputs.cache
+C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Infrastructure\obj\Debug\net9.0\GolfBrandSim.Infrastructure.sourcelink.json
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Infrastructure\obj\Debug\net9.0\GolfBran.71378E97.Up2Date
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Infrastructure\obj\Debug\net9.0\GolfBrandSim.Infrastructure.dll
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Infrastructure\obj\Debug\net9.0\refint\GolfBrandSim.Infrastructure.dll
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Infrastructure\obj\Debug\net9.0\GolfBrandSim.Infrastructure.pdb
 C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Infrastructure\obj\Debug\net9.0\ref\GolfBrandSim.Infrastructure.dll
-C:\Users\baley\Documents\Coding Projects\golf-brand-sim\src\GolfBrandSim.Infrastructure\obj\Debug\net9.0\GolfBrandSim.Infrastructure.sourcelink.json

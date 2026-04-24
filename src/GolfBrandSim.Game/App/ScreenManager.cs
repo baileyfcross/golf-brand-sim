@@ -135,14 +135,14 @@ public sealed class ScreenManager
 
     private void DrawHeader(UiContext ui, Rectangle frame)
     {
-        ui.FillRectangle(new Rectangle(0, 0, frame.Width, 64), Theme.Header);
-        ui.DrawText("GOLF BRAND SIM", new Vector2(40, 18), Theme.TextPrimary, 4);
+        ui.FillRectangle(new Rectangle(0, 0, frame.Width, 74), Theme.Header);
+        ui.DrawText("GOLF BRAND SIM", new Vector2(40, 14), Theme.TextPrimary, 3);
 
         var weekText = Session.State.IsSeasonComplete
             ? "SEASON COMPLETE"
             : $"{Formatters.WeekLabel(Session.State.CurrentWeekNumber)}  {Session.State.NextTournament?.Name}";
 
-        ui.DrawText(weekText, new Vector2(frame.Width - ui.MeasureText(weekText, 2).X - 40, 22), Theme.TextMuted, 2);
+        ui.DrawText(weekText, new Vector2(frame.Width - ui.MeasureText(weekText, 2).X - 40, 25), Theme.TextMuted, 2);
     }
 
     private void DrawTabs(UiContext ui, Rectangle bounds)
@@ -162,7 +162,7 @@ public sealed class ScreenManager
 
     private void DrawFooter(UiContext ui, Rectangle frame)
     {
-        var footerBounds = new Rectangle(40, frame.Height - 42, frame.Width - 80, 24);
+        var footerBounds = new Rectangle(40, frame.Height - 46, frame.Width - 80, 28);
         ui.DrawText("CLICK TABS, ADVANCE WEEK, OR MAIN MENU. KEYBOARD SHORTCUTS STILL AVAILABLE.", new Vector2(footerBounds.X, footerBounds.Y), Theme.TextMuted, 2);
 
         var menuBounds = GetMainMenuButtonBounds(frame);
@@ -178,22 +178,22 @@ public sealed class ScreenManager
 
     private static Rectangle GetTabStripBounds(Rectangle frame)
     {
-        return new Rectangle(40, 76, frame.Width - 80, 36);
+        return new Rectangle(40, 86, frame.Width - 80, 36);
     }
 
     private static Rectangle GetContentBounds(Rectangle frame)
     {
-        return new Rectangle(40, 120, frame.Width - 80, frame.Height - 170);
+        return new Rectangle(40, 130, frame.Width - 80, frame.Height - 180);
     }
 
     private static Rectangle GetAdvanceButtonBounds(Rectangle frame)
     {
-        return new Rectangle(frame.Width - 230, frame.Height - 54, 190, 34);
+        return new Rectangle(frame.Width - 290, frame.Height - 54, 250, 34);
     }
 
     private static Rectangle GetMainMenuButtonBounds(Rectangle frame)
     {
-        return new Rectangle(frame.Width - 430, frame.Height - 54, 180, 34);
+        return new Rectangle(frame.Width - 480, frame.Height - 54, 180, 34);
     }
 
     private int GetTabIndexAtPoint(Point point, Rectangle bounds)

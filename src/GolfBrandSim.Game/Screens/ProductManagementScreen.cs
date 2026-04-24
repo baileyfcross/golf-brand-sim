@@ -142,11 +142,11 @@ public sealed class ProductManagementScreen : IScreen
         new(bounds.X + 16, bounds.Y + 52, bounds.Width - 32, bounds.Height - 68);
 
     private static Rectangle GetCategoryBounds(Rectangle frame, int index, int top) =>
-        new(frame.X + index * 200, top + 58, 190, 36);
+        new(frame.X + index * 310, top + 58, 300, 44);
 
     private static Rectangle GetTierBounds(Rectangle frame, int index, int top) =>
-        new(frame.X + index * 220, top + 130, 210, 36);
+        new(frame.X + index * 270, top + 130, 260, 44);
 
     private static Rectangle GetConfirmBounds(Rectangle frame) =>
-        new(frame.X, frame.Y + 220 + 170, 260, 40);
+        new(frame.X, frame.Y + 220 + 194, 280, 44);
 }
